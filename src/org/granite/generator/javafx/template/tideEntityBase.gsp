@@ -283,7 +283,7 @@ public class ${jClass.as3Type.name}Base<%
 
     if (generateDefaultUidMethods) {%>
 
-    public void set uid(String value) {
+    public void setUid(String value) {
         // noop...
     }
     public String getUid() {<%
