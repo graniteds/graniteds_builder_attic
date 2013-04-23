@@ -25,6 +25,7 @@
     import org.granite.generator.as3.reflect.JavaAbstractType;
     
     import java.lang.reflect.Field;
+    import java.lang.reflect.Method;
     import java.lang.reflect.Modifier;
     
     import javax.persistence.Version;
@@ -191,13 +192,6 @@ public class ${jClass.as3Type.name}Base<%
         return true;
     }<%
     }
-	
-	%>
-	@SuppressWarnings("unused")
-	private static final String[] __externalizedProperties = { <%
-		jClass.properties.eachWithIndex { jProperty, idx -> if (idx > 0) { %>, <% } %>"${jProperty.name}"<% }
-	%> };
-	<%
 
 	for (jProperty in jClass.properties) {
 	    if (jProperty instanceof org.granite.generator.as3.reflect.JavaMember && jProperty.clientType.propertyTypeName != null) {%>
@@ -307,15 +301,16 @@ public class ${jClass.as3Type.name}Base<%
         else {
             JavaFieldProperty jId = jClass.firstIdentifier;
         %>
-            if (!_${jId.name})
+            if (${jId.name} == null)
                 return UUID.randomUUID().toString().toUpperCase();
             return getClass().getName() + "#[" + <%
                 int i = 0;
-                for (field in jId.type.declaredFields) {
-                    if (!Modifier.isStatic(field.modifiers) &&
-                        !Modifier.isTransient(field.modifiers) &&
-                        !field.isAnnotationPresent(Transient.class)) {
-                        %><%= (i++ > 0) ? (" + \",\" + ") : "" %>${jId.name}.${field.name}.toString()<%
+                for (Method method in jId.type.declaredMethods) {
+                    if (!Modifier.isStatic(method.modifiers) &&
+                        !Modifier.isTransient(method.modifiers) &&
+                        !method.isAnnotationPresent(Transient.class) &&
+						method.name.startsWith("get")) {
+                        %><%= (i++ > 0) ? (" + \",\" + ") : "" %>${jId.name}.get().${method.name}().toString()<%
                     }
                 }%> + "]";<%
         }
