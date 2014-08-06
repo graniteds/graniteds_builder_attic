@@ -148,7 +148,7 @@ public class ValidatableBean {
 		if (value.getClass().isEnum())
 			return ((Enum<?>)value).name();
 		
-		value = value.toString().replace("&", "&amp;").replace("\"", "&quot;");
+		value = value.toString().replace("&", "&amp;").replace("\"", "&quot;").replace("\\", "\\\\");
 		if (array)
 			value = ((String)value).replace(",", ",,");
 		return (String)value;
